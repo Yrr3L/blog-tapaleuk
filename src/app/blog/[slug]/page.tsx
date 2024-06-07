@@ -1,7 +1,7 @@
-import { getSinglePost } from "@/app/lib/notion";
+import { getSinglePost } from "../lib/notion";
 import Link from "next/link";
 
-export default function Page({ post }: { post: Post }) {
+export default function Page({ post }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="w-[672px] mx-auto">
@@ -20,7 +20,14 @@ export default function Page({ post }: { post: Post }) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getStaticPaths() {
+  // Generate paths based on data from API
+  // Example:
+  // const paths = [{ params: { slug: 'first-post' }}, { params: { slug: 'second-post' }}];
+  // return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
   const post = await fetchBlogData(params.slug);
   return {
     props: {
@@ -29,7 +36,7 @@ export async function getServerSideProps({ params }) {
   };
 }
 
-async function fetchBlogData(slug: string) {
+async function fetchBlogData(slug) {
   const res = await getSinglePost(slug);
   return res;
 }
