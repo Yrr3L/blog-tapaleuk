@@ -24,12 +24,14 @@ export const getAllPublishedBlog = async () => {
 
   const allPosts = posts.results;
 
-  return allPosts.map((post: any) => {
-    return getPageContent(post);
-  });
-};
+  // Fetch full content for each post
+  const detailedPosts = await Promise.all(allPosts.map(async (post: any) => {
+    const content = await getPageContent(post);
+    return content;
+  }));
 
-// tambahkan di bawah function getAllPublishedBlog
+  return detailedPosts;
+};
 
 export const getSinglePost = async (slug: string) => {
   const response = await notion.databases.query({
@@ -61,7 +63,13 @@ export const getSinglePost = async (slug: string) => {
     content: html,
   };
 };
-const getPageContent = (post: any) => {
+
+const getPageContent = async (post: any) => {
+  const responseBlockPages = await notion.blocks.children.list({
+    block_id: post.id,
+  });
+
+  const content = responseBlockPages.results;
   return {
     id: post.id,
     title: post.properties.title.title[0].plain_text,
@@ -69,5 +77,6 @@ const getPageContent = (post: any) => {
     publishedDate: post.properties.publishedDate.date.start,
     slug: post.properties.slug.formula.string,
     description: post.properties.description.rich_text[0].plain_text,
+    blocks: content, // include content blocks
   };
 };
