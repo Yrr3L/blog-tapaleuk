@@ -20,7 +20,14 @@ export default function Page({ post }: { post: Post }) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getStaticPaths() {
+  // Generate paths based on data from API
+  // Example:
+  // const paths = [{ params: { slug: 'first-post' }}, { params: { slug: 'second-post' }}];
+  // return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
   const post = await fetchBlogData(params.slug);
   return {
     props: {
