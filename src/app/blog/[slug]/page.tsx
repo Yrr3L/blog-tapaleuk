@@ -1,9 +1,7 @@
 import { getSinglePost } from "@/app/lib/notion";
 import Link from "next/link";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const post = await fetchBlogData(params.slug);
-
+export default function Page({ post }: { post: Post }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="w-[672px] mx-auto">
@@ -22,7 +20,16 @@ export default async function Page({ params }: { params: { slug: string } }) {
   );
 }
 
+export async function getServerSideProps({ params }) {
+  const post = await fetchBlogData(params.slug);
+  return {
+    props: {
+      post,
+    },
+  };
+}
+
 async function fetchBlogData(slug: string) {
-  const res = getSinglePost(slug);
+  const res = await getSinglePost(slug);
   return res;
 }
