@@ -24,7 +24,9 @@ export default async function Home() {
                 </h2>
 
                 <p>{post.description}</p>
-                {renderContentBlocks(post.blocks)}
+                {post.blocks.map((block) => (
+                  <div key={block.id}>{renderBlock(block)}</div>
+                ))}
               </div>
             </article>
           ))
@@ -35,31 +37,28 @@ export default async function Home() {
 }
 
 async function fetchBlogData() {
-  const res = getAllPublishedBlog();
+  const res = await getAllPublishedBlog();
   return res;
 }
 
-function renderContentBlocks(blocks) {
-  return blocks.map((block) => {
-    switch (block.type) {
-      case 'paragraph':
-        return <p>{block.paragraph.rich_text[0]?.plain_text}</p>;
-      case 'heading_1':
-        return <h1>{block.heading_1.rich_text[0]?.plain_text}</h1>;
-      case 'heading_2':
-        return <h2>{block.heading_2.rich_text[0]?.plain_text}</h2>;
-      case 'heading_3':
-        return <h3>{block.heading_3.rich_text[0]?.plain_text}</h3>;
-      case 'image':
-        return (
-          <img
-            src={block.image.file.url}
-            alt={block.image.caption[0]?.plain_text || 'Image'}
-          />
-        );
-      // tambahkan penanganan untuk tipe blok lainnya seperti video, tabel, dll. sesuai kebutuhan
-      default:
-        return null;
-    }
-  });
+function renderBlock(block) {
+  switch (block.type) {
+    case 'paragraph':
+      return <p>{block.paragraph.rich_text[0]?.plain_text}</p>;
+    case 'heading_1':
+      return <h1>{block.heading_1.rich_text[0]?.plain_text}</h1>;
+    case 'heading_2':
+      return <h2>{block.heading_2.rich_text[0]?.plain_text}</h2>;
+    case 'heading_3':
+      return <h3>{block.heading_3.rich_text[0]?.plain_text}</h3>;
+    case 'image':
+      return (
+        <img
+          src={block.image.file.url}
+          alt={block.image.caption[0]?.plain_text || 'Image'}
+        />
+      );
+    default:
+      return null;
+  }
 }
